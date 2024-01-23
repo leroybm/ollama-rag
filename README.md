@@ -74,3 +74,4 @@ interface ExternalDocumentationLinkProps {
 ## Limitations
 
 - Currently `.ts` and `.tsx` are being loaded with `TextLoader` as I coulnd't find any specific loader for Typescript files
+- `phind-codellama` needs 32 GB of RAM to run
