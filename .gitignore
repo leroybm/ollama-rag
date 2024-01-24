@@ -173,3 +173,5 @@ cython_debug/
 # Project specific
 
 source_documents/
+js/node_modules/
+
