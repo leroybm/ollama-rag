@@ -29,7 +29,7 @@ from constants import CHROMA_SETTINGS
 
 # Load environment variables
 persist_directory = os.environ.get('PERSIST_DIRECTORY', 'db')
-source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
+source_directory = os.environ.get('SOURCE_DIRECTORY', '~/workspace-nationalgrid/uwp2-frontend')
 embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME', 'all-MiniLM-L6-v2')
 chunk_size = 500
 chunk_overlap = 50
@@ -67,14 +67,19 @@ def load_single_document(file_path: str) -> List[Document]:
 
 def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Document]:
     """
-    Loads all documents from the source documents directory, ignoring specified files
+    Recursively loads all documents from the source documents directory, including subdirectories,
+    ignoring specified files
     """
-    all_files = []
-    for ext in LOADER_MAPPING:
-        all_files.extend(
-            glob.glob(os.path.join(source_dir, f"**/*{ext}"), recursive=True)
-        )
-    filtered_files = [file_path for file_path in all_files if file_path not in ignored_files]
+    def load_recursive(directory: str):
+        documents = []
+        for entry in os.scandir(directory):
+            if entry.is_dir():
+                documents.extend(load_recursive(entry.path))
+            elif entry.is_file() and entry.path not in ignored_files and any(entry.path.endswith(ext) for ext in LOADER_MAPPING):
+                documents.append(entry.path)
+        return documents
+
+    filtered_files = load_recursive(source_dir)
 
     with Pool(processes=os.cpu_count()) as pool:
         results = []
@@ -84,6 +89,7 @@ def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Docum
                 pbar.update()
 
     return results
+
 
 def process_documents(ignored_files: List[str] = []) -> List[Document]:
     """

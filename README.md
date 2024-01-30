@@ -25,6 +25,14 @@ ollama pull phind-codellama
 
 ### Get the data that you want to use as source for your embeddings
 
+Set the source directory as an external folder
+
+```shell
+export SOURCE_DIRECTORY='../project'
+```
+
+Or copy the files to this project
+
 ```shell
 mkdir source_documents
 rsync -av --delete --exclude '.*' --exclude 'node_modules/' ../YOUR_PROJECT source_documents
@@ -33,7 +41,7 @@ rsync -av --delete --exclude '.*' --exclude 'node_modules/' ../YOUR_PROJECT sour
 ### Ingesting files
 
 ```shell
-python ingest.py
+python3 ingest.py
 ```
 
 Output should look like this:
@@ -51,7 +59,7 @@ Ingestion complete! You can now run privateGPT.py to query your documents
 ### Ask questions
 
 ```shell
-python privateGPT.py
+python3 privateGPT.py
 
 Enter a query: Refactor ExternalDocumentationLink to accept an icon property and display it after the anchor text, replacing the icon that is already there
 
@@ -75,3 +83,4 @@ interface ExternalDocumentationLinkProps {
 
 - Currently `.ts` and `.tsx` are being loaded with `TextLoader` as I coulnd't find any specific loader for Typescript files
 - `phind-codellama` needs 32 GB of RAM to run
+- This doesn't include an agent configuration
